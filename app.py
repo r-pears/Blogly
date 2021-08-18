@@ -32,7 +32,7 @@ def create_new_user():
     """Create a new user."""
     first_name = request.form['f_name']
     last_name = request.form['l_name']
-    image = request.form['image_url']
+    image = request.form['image_url'] or None
 
     new_user = User(first_name=first_name, last_name=last_name, image_url=image)
     db.session.add(new_user)
@@ -49,15 +49,30 @@ def show_user(user_id):
     return render_template('user_details.html', user=user)
 
 
-@app.route('/users/<int:user_id>/edit', methods=['POST'])
+@app.route('/users/<int:user_id>/edit')
 def update_user(user_id):
-    """Edit an existing user."""
+    """Get the edit form for an existing user."""
     user = User.query.get_or_404(user_id)
 
-    return render_template('edit_users.html', user=user)
+    return render_template('edit_user.html', user=user)
 
 
-@app.route('/users/<int:user_id>/delete', methods=['POST'])
+@app.route('/users/<int:user_id>/edit', methods=["POST"])
+def users_update(user_id):
+    """Form submission for updating an existing user"""
+
+    user = User.query.get_or_404(user_id)
+    user.first_name = request.form['f_name']
+    user.last_name = request.form['l_name']
+    user.image_url = request.form['image_url']
+
+    db.session.add(user)
+    db.session.commit()
+
+    return redirect("/users")
+
+
+@app.route('/users/<int:user_id>/delete')
 def delete_user(user_id):
     """Delete an existing user."""
     user = User.query.get_or_404(user_id)

@@ -9,7 +9,7 @@ def connect_db(app):
 
 
 """Models for Blogly."""
-default_img = 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png'
+default_img = "https://icon-library.com/images/icon-portrait/icon-portrait-2.jpg"
 
 
 class User (db.Model):
@@ -18,7 +18,7 @@ class User (db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
-    image_url = db.Column(db.String, nullable=True, default=default_img)
+    image_url = db.Column(db.String, nullable=False, default=default_img)
 
     @property
     def full_name(self):
