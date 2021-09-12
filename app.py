@@ -101,18 +101,21 @@ def delete_user(user_id):
 def new_post_form(user_id):
     """Get the form to create a new post for a specific user."""
     user = User.query.get_or_404(user_id)
+    tags = Tag.query.all()
 
-    return render_template('posts_new.html', user=user)
+    return render_template('posts_new.html', user=user, tags=tags)
 
 
 @app.route('/users/<int:user_id>/posts/new', methods=['POST'])
 def new_post(user_id):
     """Form submission for creating a new blog post."""
     user = User.query.get_or_404(user_id)
+    tag_ids = [int(num) for num in request.form.getlist("tags")]
+    tags = Tag.query.filter(Tag.id.in_(tag_ids)).all()
     title = request.form['title']
     content = request.form['content']
 
-    new_post = Post(title=title, content=content, user=user)
+    new_post = Post(title=title, content=content, user=user, tags=tags)
     db.session.add(new_post)
     db.session.commit()
 
@@ -131,8 +134,9 @@ def show_post(post_id):
 def edit_post(post_id):
     """Show form to edit a post."""
     post = Post.query.get_or_404(post_id)
+    tags = Tag.query.all()
 
-    return render_template('edit_post.html', post=post)
+    return render_template('edit_post.html', post=post, tags=tags)
 
 
 @app.route('/posts/<int:post_id>/edit', methods=["POST"])
@@ -141,6 +145,9 @@ def posts_update(post_id):
     post = Post.query.get_or_404(post_id)
     post.title = request.form['title']
     post.content = request.form['content']
+
+    tag_ids = [int(num) for num in request.form.getlist("tags")]
+    post.tags = Tag.query.filter(Tag.id.in_(tag_ids)).all()
 
     db.session.add(post)
     db.session.commit()
@@ -168,7 +175,21 @@ def tags_index():
 
 @app.route('/tags/new')
 def tags_new_form():
-    """Form submission to create a new tag."""
+    """Show a form to create a new tag."""
     posts = Post.query.all()
 
     return render_template('tags_new.html', posts=posts)
+
+
+@app.route("/tags/new", methods=["POST"])
+def tags_new():
+    """Form submission for creating a new tag."""
+
+    post_ids = [int(num) for num in request.form.getlist("posts")]
+    posts = Post.query.filter(Post.id.in_(post_ids)).all()
+    new_tag = Tag(name=request.form['name'], posts=posts)
+
+    db.session.add(new_tag)
+    db.session.commit()
+
+    return redirect("/tags")
