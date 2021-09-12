@@ -161,6 +161,14 @@ def posts_destroy(post_id):
 @app.route('/tags')
 def tags_index():
     """Show an index page with info about all available tags."""
-
     tags = Tag.query.all()
+
     return render_template('tags_index.html', tags=tags)
+
+
+@app.route('/tags/new')
+def tags_new_form():
+    """Form submission to create a new tag."""
+    posts = Post.query.all()
+
+    return render_template('tags_new.html', posts=posts)
