@@ -193,3 +193,11 @@ def tags_new():
     db.session.commit()
 
     return redirect("/tags")
+
+
+@app.route('/tags/<int:tag_id>')
+def tags_show(tag_id):
+    """Show info on a specific tag."""
+
+    tag = Tag.query.get_or_404(tag_id)
+    return render_template('tags_show.html', tag=tag)
