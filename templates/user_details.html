@@ -7,4 +7,19 @@
     <button><a href="/users/{{ user.id }}/edit">Edit</a></button>
     <button><a href="/users/{{ user.id }}/delete">Delete</a></button>
 
+    <h2 class="mt-4">Posts</h2>
+
+    <ul>
+      {% for post in user.posts %}
+      <li>
+        <a href="/posts/{{ post.id}}">{{ post.title }}</a>
+        <small>{{ post.friendly_date }}</small>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <button>
+        <a href="/users/{{ user.id }}/posts/new">Add Post</a>
+    </button>
+
 {% endblock %}
